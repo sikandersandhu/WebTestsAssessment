@@ -1,6 +1,8 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Support.UI;
+using System;
 using WebTestAssessment;
 using WebTestAssessment.UI;
 
@@ -8,29 +10,9 @@ namespace WebTestsAssessment
 {
     [TestClass]
     public class PizzaHQWebTests : PizzaHQBaseTests
-    {
-        /* Requirements
-             1. find login icon                  | by class | nav-login-signup
-             2. click on it 
-             3. verify popup using header        | class="v-toolbar__title" - there are two elements. iterate and chose one based on text "PizzaHQ Members Login"
-             4. find signup element              | by tag <a>               - list of 14 element  find based on text "Sign Up"
-             5. click on signup element
-             6. find sign up button              | bycss  | aria-label="signup"
-             7. click on sign up button
-
-             8a. find username input box          | id="input-96"
-             8b. find username error text         | id="username-err"
-
-             9a. find password input box          | id="input-99"
-             9b. find password error text         | id="password-err"
-
-             10a. find confirm password input box | id="input-102"
-             10b. find confirm password error text| id="confirm-err"
-             */
-
-
+    {        
         [TestMethod]
-        public void SignUpFieldValidationFieldBlankError()
+        public void SignUpValidationFieldBlankError()
         {
 
             // setup
@@ -39,123 +21,134 @@ namespace WebTestsAssessment
 
 
             // act 
-
-            // confirm the pop up opened
-            var headers = driver.FindElements(By.ClassName("v-toolbar__title"));
-            foreach (IWebElement header in headers)
-            {
-                if (header.Text.ToLower() == "pizzahq members login")
-                {
-                    // find signup element and click on it
-                    var buttons = driver.FindElements(By.TagName("a"));
-                    foreach (IWebElement button in buttons)
-                    {
-                        if (button.Text.ToLower() == "sign up")
-                        {
-                            // click on it
-                            button.Click();
-
-                            // find the sign up button and click
-                            // could not finish and modelling
-                        }
-                        else throw new NotFoundException("Sign up button not found");
-                    }
-
-                }
-                else throw new NotFoundException("Pop up not found");
-            }
-
-            // click on signup button
-            driver.FindElement(By.CssSelector("[aria-label='signup']")).Click();
-
-            //  assert error text for username, password, confirm password
-
+            
+            // initialize sign up form object
             SignUpForm signUpForm = new SignUpForm(driver);
+
+            // WAIT
+
+            // wait till pop up form appears
+            new WebDriverWait(driver, TimeSpan.FromSeconds(10)).Until(d => signUpForm.IsSignUpFormOpen());
+
+            // if the form is open, 
+            if (signUpForm.IsSignUpFormOpen())
+            {
+                // click on "not a member? signup" button
+                signUpForm.NotMemberSignUp();
+
+                // find the sign up button and click
+                signUpForm.SignUp();
+            }
+            // if form not open
+            else throw new NotFoundException("Form not open");
+
+
+            //  assert 
+
+            // wait till error messages appear
+            new WebDriverWait(driver, TimeSpan.FromSeconds(10)).Until(d => "username is required" == signUpForm.UserNameError.ToLower());
 
             // assert user name required error
             Assert.AreEqual("username is required", signUpForm.UserNameError.ToLower());
             // assert password required error
             Assert.AreEqual("password is required", signUpForm.PasswordError.ToLower());
             // assert confirm password required error
-            Assert.AreEqual("Please confirm your password", signUpForm.ConfirmPasswordError.ToLower());
+            Assert.AreEqual("please confirm your password", signUpForm.ConfirmPasswordError.ToLower());
 
         }
-
         [TestMethod]
-        public void SignUpFieldValidationIncorrectInputErrors()
+        public void SignUpValidationIncorrectInputErrors()
         {
 
             // setup
+
             // click on login-signup icon
             driver.FindElement(By.ClassName("nav-login-signup")).Click();
 
 
             // act 
 
+            // initialize sign up form object
             SignUpForm signUpForm = new SignUpForm(driver);
 
-            // confirm the pop up opened
-            var headers = driver.FindElements(By.ClassName("v-toolbar__title"));
-            foreach (IWebElement header in headers)
+            // WAIT
+
+            // wait till pop up form appears
+            new WebDriverWait(driver, TimeSpan.FromSeconds(10)).Until(d => signUpForm.IsSignUpFormOpen());
+
+            // if the form is open, 
+            if (signUpForm.IsSignUpFormOpen())
             {
-                if (header.Text.ToLower() == "pizzahq members login")
+                // click on "not a member? signup" button
+                signUpForm.NotMemberSignUp();
+
+                // if the form is refreshed with new input, 
+                if (signUpForm.IsSignUpFormOpen())
                 {
-                    // find signup element and click on it
-                    var buttons = driver.FindElements(By.TagName("a"));
-                    foreach (IWebElement button in buttons)
-                    {
-                        if (button.Text.ToLower() == "sign up")
-                        {
-                            // click on it
-                            button.Click();
+                    string value = "abc";
 
-                            //find sign up button and click on it
-                            // could not finish code and modelling
+                    // enter username
+                    signUpForm.EnterUserName = value;
+                    // enter password
+                    signUpForm.EnterPassword = value;
+                    // confirm password
+                    signUpForm.ConfirmPassword = "def";
 
-                        }
-                        else throw new NotFoundException("Sign up button not found");
-                    }
-
-                }
-                else throw new NotFoundException("Pop up not found");
+                    // find the sign up button and click
+                    signUpForm.SignUp();
+                }                
             }
+            // if form not open
+            else throw new NotFoundException("Form not open");
 
-            // click on signup button
-            driver.FindElement(By.CssSelector("[aria-label='signup']")).Click();
 
-            //  assert error text for username, password, confirm password
+            //  assert 
 
-            
+            // wait till error messages appear
+            new WebDriverWait(driver, TimeSpan.FromSeconds(10)).Until(d => "username is required" == signUpForm.UserNameError.ToLower());
 
             // assert user name required error
-            Assert.AreEqual("username is required", signUpForm.UserNameError.ToLower());
+            Assert.AreEqual("username must be minimum of 6 characters", signUpForm.UserNameError.ToLower());
             // assert password required error
-            Assert.AreEqual("password is required", signUpForm.PasswordError.ToLower());
+            Assert.AreEqual("password must be minimum of 8 characters", signUpForm.PasswordError.ToLower());
             // assert confirm password required error
-            Assert.AreEqual("Please confirm your password", signUpForm.ConfirmPasswordError.ToLower());
+            Assert.AreEqual("your passwords do not match", signUpForm.ConfirmPasswordError.ToLower());
         }
-
         [TestMethod]
-        public void SignUpFieldValidationUserNameExistsError()
+        public void SignUpValidationUserNameExistsError()
         {
 
             // setup
 
-            // set web driver
-            driver = new ChromeDriver();
-            // set the url for the driver
-            driver.Url = ("https://d3udduv23dv8b4.cloudfront.net/#/");
-            // maximize window
-            driver.Manage().Window.FullScreen();
+            // click on login-signup icon
+            driver.FindElement(By.ClassName("nav-login-signup")).Click();
 
-            
+
             // act 
-            // could not finish
+
+            // initialize sign up form object
+            SignUpForm signUpForm = new SignUpForm(driver);
+
+            // if the form is open, 
+            if (signUpForm.IsSignUpFormOpen())
+            {
+                // click on "not a member? signup" button
+                signUpForm.NotMemberSignUp();
+
+                // enter username
+                signUpForm.EnterUserName = "donaldtrump";
+               
+                // find the sign up button and click
+                signUpForm.SignUp();
+            }
+            // if form not open
+            else throw new NotFoundException("Form not open");
 
 
+            //  assert 
 
-            //  assert error text for username, password, confirm password
-
+            // assert user name required error
+            Assert.AreEqual("username already exists", signUpForm.UserNameError.ToLower());
 
         }
     }
