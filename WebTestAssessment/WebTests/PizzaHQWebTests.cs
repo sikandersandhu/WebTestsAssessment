@@ -3,6 +3,7 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using System;
+using System.Collections.Generic;
 using WebTestAssessment;
 using WebTestAssessment.UI;
 
@@ -16,15 +17,15 @@ namespace WebTestsAssessment
         {
 
             // setup
-
-            // click on login-signup icon
-            driver.FindElement(By.ClassName("nav-login-signup")).Click();
-
+            
+            // open login or signup popup
+            menuBar.OpenLoginOrSignupPage();
 
             // act 
             
             // initialize sign up form object
             SignUpForm signUpForm = new SignUpForm(driver);
+
 
             // wait
 
@@ -32,13 +33,13 @@ namespace WebTestsAssessment
             new WebDriverWait(driver, TimeSpan.FromSeconds(10)).Until(d => signUpForm.IsSignUpFormOpen());
 
 
-            // if the form is open, 
+            // check if the form is open, 
             if (signUpForm.IsSignUpFormOpen())
             {
                 // click on "not a member? signup" button
                 signUpForm.ClickNotMemberSignUp();
 
-                // find the sign up button and click
+                // click on the "sign up" button
                 signUpForm.ClickSignUp();
             }
             // if form not open
@@ -64,8 +65,8 @@ namespace WebTestsAssessment
 
             // setup
 
-            // click on login-signup icon
-            driver.FindElement(By.ClassName("nav-login-signup")).Click();
+            // open login or signup popup
+            menuBar.OpenLoginOrSignupPage();
 
 
             // act 
@@ -124,8 +125,8 @@ namespace WebTestsAssessment
 
             // setup
 
-            // click on login-signup icon
-            driver.FindElement(By.ClassName("nav-login-signup")).Click();
+            // open login or signup popup
+            menuBar.OpenLoginOrSignupPage();
 
 
             // act 
@@ -163,6 +164,32 @@ namespace WebTestsAssessment
 
             // assert user name required error
             Assert.AreEqual("username already exists", signUpForm.UserNameError.ToLower());       
+        }
+        [TestMethod]
+        public void VerifyVeganPizzaPrice()
+        {
+            // setup
+
+            // open menu page
+            menuBar.OpenMenuPage();
+
+            // initialize pizza page object
+            PizzaPage pizzaPage = new PizzaPage(driver);
+
+
+            // act
+           
+            // get a list of vegan pizza
+            var veganPizzas = pizzaPage.GetAllVeganPizza();
+
+
+            // assert
+            
+            // assert that all vegan pizzas are $14.99
+            foreach (var veganPizza in veganPizzas)
+            {
+                pizzaPage.GetVeganPizza(veganPizza, p => p.DoublePrice == 14.99);
+            }
         }
     }
 }
