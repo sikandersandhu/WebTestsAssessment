@@ -12,7 +12,7 @@ namespace WebTestsAssessment
     public class PizzaHQWebTests : PizzaHQBaseTests
     {        
         [TestMethod]
-        public void SignUpValidationFieldBlankError()
+        public void SignUpValidationFieldsBlankError()
         {
 
             // setup
@@ -34,10 +34,10 @@ namespace WebTestsAssessment
             if (signUpForm.IsSignUpFormOpen())
             {
                 // click on "not a member? signup" button
-                signUpForm.NotMemberSignUp();
+                signUpForm.ClickNotMemberSignUp();
 
                 // find the sign up button and click
-                signUpForm.SignUp();
+                signUpForm.ClickSignUp();
             }
             // if form not open
             else throw new NotFoundException("Form not open");
@@ -76,13 +76,13 @@ namespace WebTestsAssessment
             // wait till pop up form appears
             new WebDriverWait(driver, TimeSpan.FromSeconds(10)).Until(d => signUpForm.IsSignUpFormOpen());
 
-            // if the form is open, 
+            // if the form is openopen, 
             if (signUpForm.IsSignUpFormOpen())
             {
                 // click on "not a member? signup" button
-                signUpForm.NotMemberSignUp();
+                signUpForm.ClickNotMemberSignUp();
 
-                // if the form is refreshed with new input, 
+                // check if the form open
                 if (signUpForm.IsSignUpFormOpen())
                 {
                     string value = "abc";
@@ -95,7 +95,8 @@ namespace WebTestsAssessment
                     signUpForm.ConfirmPassword = "def";
 
                     // find the sign up button and click
-                    signUpForm.SignUp();
+                    signUpForm.ClickSignUp();
+
                 }                
             }
             // if form not open
@@ -103,9 +104,6 @@ namespace WebTestsAssessment
 
 
             //  assert 
-
-            // wait till error messages appear
-            new WebDriverWait(driver, TimeSpan.FromSeconds(10)).Until(d => "username is required" == signUpForm.UserNameError.ToLower());
 
             // assert user name required error
             Assert.AreEqual("username must be minimum of 6 characters", signUpForm.UserNameError.ToLower());
@@ -129,27 +127,34 @@ namespace WebTestsAssessment
             // initialize sign up form object
             SignUpForm signUpForm = new SignUpForm(driver);
 
+            // WAIT
+
+            // wait till pop up form appears
+            new WebDriverWait(driver, TimeSpan.FromSeconds(10)).Until(d => signUpForm.IsSignUpFormOpen());
+
             // if the form is open, 
             if (signUpForm.IsSignUpFormOpen())
             {
                 // click on "not a member? signup" button
-                signUpForm.NotMemberSignUp();
+                signUpForm.ClickNotMemberSignUp();
 
-                // enter username
-                signUpForm.EnterUserName = "donaldtrump";
-               
-                // find the sign up button and click
-                signUpForm.SignUp();
+                // if the form is refreshed with new input, 
+                if (signUpForm.IsSignUpFormOpen())
+                {
+                    // enter username
+                    signUpForm.EnterUserName = "donaldtrump";  
+                    
+                    // click signup button
+                    signUpForm.ClickSignUp();                   
+                }
             }
-            // if form not open
             else throw new NotFoundException("Form not open");
 
 
             //  assert 
 
             // assert user name required error
-            Assert.AreEqual("username already exists", signUpForm.UserNameError.ToLower());
-
+            Assert.AreEqual("username already exists", signUpForm.UserNameError.ToLower());       
         }
     }
 }

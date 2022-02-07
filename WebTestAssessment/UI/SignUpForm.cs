@@ -2,6 +2,7 @@
 using OpenQA.Selenium.Chrome;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,82 +18,75 @@ namespace WebTestAssessment.UI
             this.driver = driver;
         }
 
-        // properties
-        public string UserNameError => driver.FindElement(By.Id("username-err")).Text;
-        public string PasswordError => driver.FindElement(By.Id("password-err")).Text;
-        public string ConfirmPasswordError => driver.FindElement(By.Id("confirm-err")).Text;
-
+        // form input elements
         public string EnterUserName
-        {         
-            set
-            {              
-                IWebElement userName = driver.FindElement(By.Id("input-96"));
-                userName.Click();
-                userName.SendKeys(value);               
+        {
+            //get => driver.FindElement(By.Id("input-91")).Text;
+            set 
+            {
+                driver.FindElement(By.Id("input-91")).SendKeys(value);
             }
         }
         public string EnterPassword
         {
-            get => driver.FindElement(By.Id("input-99")).Text;
+            //get => driver.FindElement(By.Id("input-94")).Text;
             set
             {
-                IWebElement userName = driver.FindElement(By.Id("input-99"));
-                userName.Clear();
-                userName.SendKeys(value);
+                driver.FindElement(By.Id("input-94")).SendKeys(value);
             }
         }
         public string ConfirmPassword
         {
-            get => driver.FindElement(By.Id("input-102")).Text;
+            //get => driver.FindElement(By.Id("input-97")).Text;
             set
             {
-                IWebElement userName = driver.FindElement(By.Id("input-102"));
-                userName.Clear();
-                userName.SendKeys(value);
+                driver.FindElement(By.Id("input-97")).SendKeys(value);
             }
         }
-
-        // methods
+        // form errors
+        public string UserNameError => driver.FindElement(By.Id("username-err")).GetAttribute("innerText");
+        public string PasswordError => driver.FindElement(By.Id("password-err")).GetAttribute("innerText");
+        public string ConfirmPasswordError => driver.FindElement(By.Id("confirm-err")).GetAttribute("innerText");
+      
         public bool IsSignUpFormOpen()
         {
-            bool isFormOpen = false;
             // confirm the pop up opened
             var headers = driver.FindElements(By.ClassName("v-toolbar__title"));
             foreach (IWebElement header in headers)
             {
                 if (header.Text.ToLower() == "pizzahq members login")
                 {
-                    return isFormOpen = true;
+                    return true;
                 }
             }
-            return isFormOpen;
+            return false;
         }
-        public void NotMemberSignUp()
+        public void ClickNotMemberSignUp()
         {
-            /*// find "not a member? signup" element and click on it
+            // confirm the pop up opened
             var buttons = driver.FindElements(By.TagName("a"));
             foreach (IWebElement button in buttons)
             {
                 if (button.Text.ToLower() == "sign up")
                 {
-                    // click on it
                     button.Click();
+                    return;
                 }
-                else throw new NotFoundException("Sign up button not found");
-            }*/
+            }
+            throw new NotFoundException("'Not a member? Sign up' button could not be found");
 
-            // resorting to find by xpath | Why is finding by tag in the above code not working???????
-            driver.FindElement(By.XPath("//a[text()='Sign Up']")).Click();
+            // xpath option 
+            //driver.FindElement(By.XPath("//a[text()='Sign Up']")).Click();
         }
-        public void SignUp()
+        public void ClickSignUp()
         {
-            driver.FindElement(By.CssSelector("[aria-label='signup']")).Click();
+            driver.FindElement(By.CssSelector("button[aria-label='signup']")).Click();
         }
     }  
 
     /* Requirements
              1. find login icon                       | by class | nav-login-signup
-             2. click on it 
+             2. click on it
              3. verify popup using header             | class="v-toolbar__title" - there are two elements. iterate and chose one based on text "PizzaHQ Members Login"
              4. find "Not a member? signup" element   | by tag <a>               - list of 14 element  find based on text "Sign Up"
              5. click on "Not a member? signup" element
