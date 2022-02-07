@@ -16,6 +16,7 @@ namespace WebTestsAssessment
         {
 
             // setup
+
             // click on login-signup icon
             driver.FindElement(By.ClassName("nav-login-signup")).Click();
 
@@ -25,10 +26,11 @@ namespace WebTestsAssessment
             // initialize sign up form object
             SignUpForm signUpForm = new SignUpForm(driver);
 
-            // WAIT
+            // wait
 
             // wait till pop up form appears
             new WebDriverWait(driver, TimeSpan.FromSeconds(10)).Until(d => signUpForm.IsSignUpFormOpen());
+
 
             // if the form is open, 
             if (signUpForm.IsSignUpFormOpen())
@@ -71,18 +73,20 @@ namespace WebTestsAssessment
             // initialize sign up form object
             SignUpForm signUpForm = new SignUpForm(driver);
 
-            // WAIT
+
+            // wait
 
             // wait till pop up form appears
             new WebDriverWait(driver, TimeSpan.FromSeconds(10)).Until(d => signUpForm.IsSignUpFormOpen());
 
-            // if the form is openopen, 
+
+            // check if the form is open, 
             if (signUpForm.IsSignUpFormOpen())
             {
                 // click on "not a member? signup" button
                 signUpForm.ClickNotMemberSignUp();
 
-                // check if the form open
+                // check if the form is open
                 if (signUpForm.IsSignUpFormOpen())
                 {
                     string value = "abc";
@@ -97,7 +101,9 @@ namespace WebTestsAssessment
                     // find the sign up button and click
                     signUpForm.ClickSignUp();
 
-                }                
+                }
+                // if form not open
+                else throw new NotFoundException("Form not open");
             }
             // if form not open
             else throw new NotFoundException("Form not open");
@@ -127,18 +133,19 @@ namespace WebTestsAssessment
             // initialize sign up form object
             SignUpForm signUpForm = new SignUpForm(driver);
 
-            // WAIT
+
+            // wait
 
             // wait till pop up form appears
             new WebDriverWait(driver, TimeSpan.FromSeconds(10)).Until(d => signUpForm.IsSignUpFormOpen());
 
-            // if the form is open, 
+            // check if the form is open, 
             if (signUpForm.IsSignUpFormOpen())
             {
                 // click on "not a member? signup" button
                 signUpForm.ClickNotMemberSignUp();
 
-                // if the form is refreshed with new input, 
+                // check if the form is open, 
                 if (signUpForm.IsSignUpFormOpen())
                 {
                     // enter username
@@ -147,6 +154,7 @@ namespace WebTestsAssessment
                     // click signup button
                     signUpForm.ClickSignUp();                   
                 }
+                else throw new NotFoundException("Form not open");
             }
             else throw new NotFoundException("Form not open");
 
