@@ -15,7 +15,7 @@ namespace WebTestsAssessment
             this.driver = driver;
         }
 
-        public List<PizzaTile> GetAllVeganPizza()
+        public List<PizzaTile> GetAllVeganPizzas()
         {
             // initialize the list to insert vegan pizza tiles to and return
             veganPizzas = new List<PizzaTile>();

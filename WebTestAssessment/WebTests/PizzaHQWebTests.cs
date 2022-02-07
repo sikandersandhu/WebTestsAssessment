@@ -180,7 +180,7 @@ namespace WebTestsAssessment
             // act
            
             // get a list of vegan pizza
-            var veganPizzas = pizzaPage.GetAllVeganPizza();
+            var veganPizzas = pizzaPage.GetAllVeganPizzas();
 
 
             // assert

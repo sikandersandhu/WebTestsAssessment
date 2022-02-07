@@ -20,6 +20,5 @@ namespace WebTestsAssessment
         {
             driver.FindElement(By.CssSelector("[aria-label='menu']")).Click();
         }
-
     }
 }
