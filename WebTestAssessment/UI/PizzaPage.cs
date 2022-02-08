@@ -3,40 +3,58 @@ using OpenQA.Selenium.Chrome;
 using System;
 using System.Collections.Generic;
 
+
+/*    Changes to commit
+*    
+*    Pizza page
+*    
+*    - Add wrapper method to get several pizzas matching a predicate | GetPizza()
+*    - Delete                                                        | GetAllVeganPizzas()
+*    - Delete                                                        | GetVeganPizza
+*    - Delete private variable veganPizzas
+*   
+*    
+*/
+
 namespace WebTestsAssessment
 {
     public class PizzaPage
     {
         private ChromeDriver driver;
-        private List<PizzaTile> veganPizzas;
 
         public PizzaPage(ChromeDriver driver)
         {
             this.driver = driver;
         }
 
-        public List<PizzaTile> GetAllVeganPizzas()
+        // return a PizzaTile object that satisfies the predicate evaluation to true
+        public PizzaTile GetPizza(Predicate<PizzaTile> predicate)
         {
-            // initialize the list to insert vegan pizza tiles to and return
-            veganPizzas = new List<PizzaTile>();
+            foreach (IWebElement pizza in driver.FindElements(By.ClassName("pizza"))) {
 
-            // check within the list of all pizzas
-            foreach (IWebElement pizza in driver.FindElements(By.ClassName("pizza")))
-            {
                 // initialize pizza tile object to access "Vegan" property
                 PizzaTile pizzaTile = new PizzaTile(pizza);
 
-                // if pizza is vegan, add it to the vegan pizzas list
-                if (pizzaTile.Pizza.ToLower().Contains("vegan"))  veganPizzas.Add(pizzaTile);                 
+                if (predicate.Invoke(pizzaTile)) return pizzaTile;
             }
-            // return the list of vegan pizzas
-            return veganPizzas;
+            throw new NotFoundException("Pizza not found");
         }
 
-        public PizzaTile GetVeganPizza( PizzaTile veganPizza , Predicate<PizzaTile> predicate)
+        // return a list of PizzaTile objects that satisfy the predicate evaluation to true
+        public List<PizzaTile> GetPizzas(Predicate<PizzaTile> predicate)
         {
-            if (predicate.Invoke(veganPizza)) return veganPizza;          
-            throw new NotFoundException("Pizza not found");
+            List<PizzaTile> pizzas = new List<PizzaTile>();
+
+            foreach (IWebElement pizza in driver.FindElements(By.ClassName("pizza")))
+            {
+
+                // initialize pizza tile object to access "Vegan" property
+                PizzaTile pizzaTile = new PizzaTile(pizza);
+
+                if (predicate.Invoke(pizzaTile)) pizzas.Add(pizzaTile);
+            }
+            if ( pizzas != null) return pizzas;
+            else throw new NotFoundException("Pizza not found");
         }
     }
 }
