@@ -7,6 +7,16 @@ using System.Collections.Generic;
 using WebTestAssessment;
 using WebTestAssessment.UI;
 
+/*    Changes to commit
+ *    
+ *    PizzaHQWebTests
+ *    
+ *    - Add new test | VerifyRating()
+ *    - Add new test | VerifyCalories()
+ *    - Update       | VerifyVeganPizzaPrice()
+ *      
+*/
+
 namespace WebTestsAssessment
 {
     [TestClass]
@@ -178,18 +188,67 @@ namespace WebTestsAssessment
 
 
             // act
-           
-            // get a list of vegan pizza
-            var veganPizzas = pizzaPage.GetAllVeganPizzas();
+
+            // get a list of vegan pizza to verify their price
+            var veganPizzas = pizzaPage.GetPizzas(p => p.Pizza.ToLower().Contains("vegan"));
 
 
             // assert
-            
-            // assert that all vegan pizzas are $14.99
+
+            // verify that all vegan pizzas are $14.99
             foreach (var veganPizza in veganPizzas)
             {
-                pizzaPage.GetVeganPizza(veganPizza, p => p.DoublePrice == 14.99);
+                //pizzaPage.GetVeganPizza(veganPizza, p => p.DoublePrice == 14.99);
+                Assert.AreEqual(14.99, veganPizza.DoublePrice);
             }
+        }
+        [TestMethod]
+        public void VerifyRating()
+        {
+            // setup
+
+            // open menu page
+            menuBar.OpenMenuPage();
+
+            // initialize pizza page object
+            PizzaPage pizzaPage = new PizzaPage(driver);
+
+
+            // act
+
+            // get pizza tile to verify it rating
+            var pizza = pizzaPage.GetPizza(p => p.Pizza.ToLower() == "mega meatlovers");
+
+
+            // assert
+
+            // verify the rating of the pizza
+            Assert.AreEqual(2, pizza.Rating);
+            
+        }
+        [TestMethod]
+        public void VerifyCalories()
+        {
+            // setup
+
+            // open menu page
+            menuBar.OpenMenuPage();
+
+            // initialize pizza page object
+            PizzaPage pizzaPage = new PizzaPage(driver);
+
+
+            // act
+
+            // get pizza tile to verify calories
+            var pizza = pizzaPage.GetPizza(p => p.Pizza.ToLower() == "spicy veg trio");
+
+
+            // assert
+
+            // verify the calories in pizza
+            Assert.AreEqual(3824, pizza.IntCalories);
+
         }
     }
 }
